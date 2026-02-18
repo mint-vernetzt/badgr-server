@@ -1,0 +1,170 @@
+version: "3.9"
+services:
+  change-ownership:
+    image: alpine
+    restart: unless-stopped
+    user: root
+    group_add:
+      - "999"
+    volumes:
+      - badgr_server_api_sock:/badgr_server/sock
+      - badgr_server_staticfiles:/badgr_server/staticfiles
+      - badgr_server_mediafiles:/badgr_server/mediafiles
+    command: chown -R 999:999 /badgr_server/sock /badgr_server/staticfiles /badgr_server/mediafiles
+
+  api:
+    image: ghcr.io/open-educational-badges/badgr-server:develop
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_started
+      memcached:
+        condition: service_started
+      celery_worker:
+        condition: service_started
+      redis:
+        condition: service_started
+    volumes:
+      - badgr_server_api_sock:/badgr_server/sock
+      - badgr_server_mediafiles:/badgr_server/mediafiles
+      - badgr_server_staticfiles:/badgr_server/staticfiles
+      - ./uwsgi.ini:/badgr_server/uwsgi.ini
+      - ./settings_local.py:/badgr_server/apps/mainsite/settings_local.py
+      - ./entrypoint.sh:/badgr_server/entrypoint.sh
+      - ./backups:/backups
+      - ./user_emails.csv:/badgr_server/user_emails.csv
+      - ./esco_issuers.txt:/badgr_server/esco_issuers.txt
+    networks:
+      - badgr
+    labels:
+      - "logging=promtail"
+      - "logging_jobname=containerlogs"
+      - com.centurylinklabs.watchtower.lifecycle.post-update=touch newVersion
+    environment:
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+      - TZ=Europe/Berlin
+
+  memcached:
+    image: "memcached:1.6.39-alpine"
+    restart: unless-stopped
+    expose:
+      - "11211"
+    networks:
+      - badgr
+    command: ["memcached", "-m", "512", "-I", "10m", "-v"]
+    environment:
+      - TZ=Europe/Berlin
+
+  db:
+    image: mysql:8.0.36
+    restart: unless-stopped
+    volumes:
+      - badgr_server_prod_db:/var/lib/mysql:rw
+      - ./.docker/etc/init.sql:/docker-entrypoint-initdb.d/init.sql
+    environment:
+      - "MYSQL_USER=${MYSQL_USER}"
+      - "MYSQL_PASSWORD=${MYSQL_PASSWORD}"
+      - "MYSQL_HOST=${MYSQL_HOST}"
+      - "MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}"
+      - TZ=Europe/Berlin
+    expose:
+      - "3306"
+    networks:
+      - badgr
+    labels:
+      - "logging=promtail"
+      - "logging_jobname=containerlogs"
+
+  celery_worker:
+    image: ghcr.io/open-educational-badges/badgr-server:develop
+    entrypoint: []
+    command: >
+      bash -c "PYTHONPATH=/badgr_server/apps celery -A mainsite worker --loglevel=info"
+    volumes:
+      - badgr_server_mediafiles:/badgr_server/mediafiles
+      - ./settings_local.py:/badgr_server/apps/mainsite/settings_local.py
+      - ./entrypoint.sh:/badgr_server/entrypoint.sh
+    environment:
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+      - "MYSQL_PASSWORD=${MYSQL_PASSWORD}"
+      - "MYSQL_HOST=${MYSQL_HOST}"
+      - "MYSQL_USER=${MYSQL_USER}"
+      - TZ=Europe/Berlin
+    networks:
+      - badgr
+    restart: unless-stopped
+    depends_on:
+      - redis
+    labels:
+      - "logging=promtail"
+      - "logging_jobname=containerlogs"
+
+  redis:
+    image: redis:latest
+    restart: unless-stopped
+    networks:
+      - badgr
+    environment:
+      - TZ=Europe/Berlin
+
+  # this container runs nginx (webserver) and uses the uwsgi app.sock file from prod_api via a volume
+  nginx:
+    image: nginx:1.26.2
+    restart: unless-stopped
+    group_add:
+      - "999"
+    volumes:
+      - ./.docker/config/nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./.docker/config/nginx/sites-available:/etc/nginx/sites-available
+      - badgr_server_api_sock:/sock
+      - badgr_server_mediafiles:/mediafiles
+      - badgr_server_staticfiles:/staticfiles
+    depends_on:
+      - "api"
+    networks:
+      - badgr
+      - default
+      - https_proxy_traefik
+    labels:
+      - "com.centurylinklabs.watchtower.enable=false"
+      - "logging=promtail"
+      - "logging_jobname=containerlogs"
+      - "traefik.enable=true"
+      - "traefik.docker.network=https_proxy_traefik"
+      # badgr-server-api is a arbitrary name
+      # CHANGE DOMAIN BELOW
+      - "traefik.http.routers.badgr-server-api.rule=Host(`api.${DOMAIN}`)" # <-- CHANGE DOMAIN
+      - "traefik.http.routers.badgr-server-api.entrypoints=web-secure"
+      - "traefik.http.routers.badgr-server-api.tls.certresolver=letsencrypt"
+      - "traefik.http.services.badgr-server-api.loadbalancer.server.port=80"
+    environment:
+      - TZ=Europe/Berlin
+
+  # This container makes sure that always the latest version (both of badgr-ui and badgr-server) is deployed
+  watchtower:
+    image: containrrr/watchtower
+    restart: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /home/ubuntu/.docker/config.json:/config.json
+    command: --interval 60 --enable-lifecycle-hooks
+    labels:
+      - "logging=promtail"
+      - "logging_jobname=containerlogs"
+
+networks:
+  default:
+    driver: bridge
+  badgr:
+    driver: bridge
+  https_proxy_traefik:
+    external: true
+
+volumes:
+  badgr_server_api_sock:
+  badgr_server_mediafiles:
+  badgr_server_staticfiles:
+  badgr_server_prod_db:
+  nginx_conf:
