@@ -40,7 +40,6 @@ services:
       # - "./traefik.toml:/etc/traefik/traefik.toml"
       # - "./dynamic_conf.toml:/etc/traefik/dynamic_conf.toml"
       - "./letsencrypt:/letsencrypt"
-      - /var/run/docker.sock:/var/run/docker.sock
     depends_on:
       - socket-proxy
     networks:
