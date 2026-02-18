@@ -12,38 +12,38 @@ services:
       - badgr_server_mediafiles:/badgr_server/mediafiles
     command: chown -R 999:999 /badgr_server/sock /badgr_server/staticfiles /badgr_server/mediafiles
 
-  api:
-    image: ghcr.io/open-educational-badges/badgr-server:develop
-    restart: unless-stopped
-    depends_on:
-      db:
-        condition: service_started
-      memcached:
-        condition: service_started
-      celery_worker:
-        condition: service_started
-      redis:
-        condition: service_started
-    volumes:
-      - badgr_server_api_sock:/badgr_server/sock
-      - badgr_server_mediafiles:/badgr_server/mediafiles
-      - badgr_server_staticfiles:/badgr_server/staticfiles
-      - ./uwsgi.ini:/badgr_server/uwsgi.ini
-      - ./settings_local.py:/badgr_server/apps/mainsite/settings_local.py
-      - ./entrypoint.sh:/badgr_server/entrypoint.sh
-      - ./backups:/backups
-      - ./user_emails.csv:/badgr_server/user_emails.csv
-      - ./esco_issuers.txt:/badgr_server/esco_issuers.txt
-    networks:
-      - badgr
-    labels:
-      - "logging=promtail"
-      - "logging_jobname=containerlogs"
-      - com.centurylinklabs.watchtower.lifecycle.post-update=touch newVersion
-    environment:
-      - CELERY_BROKER_URL=redis://redis:6379/0
-      - CELERY_RESULT_BACKEND=redis://redis:6379/0
-      - TZ=Europe/Berlin
+  # api:
+  #   image: ghcr.io/open-educational-badges/badgr-server:develop
+  #   restart: unless-stopped
+  #   depends_on:
+  #     db:
+  #       condition: service_started
+  #     memcached:
+  #       condition: service_started
+  #     celery_worker:
+  #       condition: service_started
+  #     redis:
+  #       condition: service_started
+  #   volumes:
+  #     - badgr_server_api_sock:/badgr_server/sock
+  #     - badgr_server_mediafiles:/badgr_server/mediafiles
+  #     - badgr_server_staticfiles:/badgr_server/staticfiles
+  #     - ./uwsgi.ini:/badgr_server/uwsgi.ini
+  #     - ./settings_local.py:/badgr_server/apps/mainsite/settings_local.py
+  #     - ./entrypoint.sh:/badgr_server/entrypoint.sh
+  #     - ./backups:/backups
+  #     - ./user_emails.csv:/badgr_server/user_emails.csv
+  #     - ./esco_issuers.txt:/badgr_server/esco_issuers.txt
+  #   networks:
+  #     - badgr
+  #   labels:
+  #     - "logging=promtail"
+  #     - "logging_jobname=containerlogs"
+  #     - com.centurylinklabs.watchtower.lifecycle.post-update=touch newVersion
+  #   environment:
+  #     - CELERY_BROKER_URL=redis://redis:6379/0
+  #     - CELERY_RESULT_BACKEND=redis://redis:6379/0
+  #     - TZ=Europe/Berlin
 
   memcached:
     image: "memcached:1.6.39-alpine"
@@ -121,8 +121,8 @@ services:
       - badgr_server_api_sock:/sock
       - badgr_server_mediafiles:/mediafiles
       - badgr_server_staticfiles:/staticfiles
-    depends_on:
-      - "api"
+    # depends_on:
+    #   - "api"
     networks:
       - badgr
       - default
