@@ -28,17 +28,9 @@ services:
     ports:
       - 80:80
       - 443:443
-    command:
-      - --providers.docker=true
-      - --providers.docker.exposedbydefault=false
-      - --entrypoints.web.address=:80
-      - --entrypoints.web-secure.address=:443
-      - --certificatesresolvers.letsencrypt.acme.tlschallenge=true
-      - --certificatesresolvers.letsencrypt.acme.email=${LETSENCRYPT_EMAIL}
-      - --certificatesresolvers.letsencrypt.acme.storage=/letsencrypt/acme.json
     volumes:
-      # - "./traefik.toml:/etc/traefik/traefik.toml"
-      # - "./dynamic_conf.toml:/etc/traefik/dynamic_conf.toml"
+      - "./traefik.toml:/etc/traefik/traefik.toml"
+      - "./dynamic_conf.toml:/etc/traefik/dynamic_conf.toml"
       - "./letsencrypt:/letsencrypt"
     depends_on:
       - socket-proxy
