@@ -53,26 +53,24 @@ services:
       - docker-socket-proxy
       - default
       - traefik
-    # labels:
-    #   - "traefik.enable=true"
-    #   # Traefik complains if no port is set here, this dummy service doesn't exist. See [here](https://github.com/traefik/traefik/issues/5732)
-    #   - "traefik.http.services.justAdummyService.loadbalancer.server.port=1337"
-    #   # CHANGE DOMAIN BELOW
-    #   - "traefik.http.routers.traefik_https.rule=Host(`${DOMAIN}`) && (PathPrefix(`/dashboard`) || PathPrefix(`/api`))" # <-- CHANGE DOMAIN
-    #   - "traefik.http.routers.traefik_https.entrypoints=web-secure"
-    #   - "traefik.http.routers.traefik_https.tls.certresolver=letsencrypt"
-    #   - "traefik.http.routers.traefik_https.tls=true"
-    #   - "traefik.http.routers.traefik_https.service=api@internal"
-    #   - "traefik.http.middlewares.traefik-auth.basicauth.users=${BASIC_AUTH_USER}:${BASIC_AUTH_PASSWORD_HASH}"
-    #   - "traefik.http.routers.http_traefik.rule=Host(`${DOMAIN}`) &&(PathPrefix(`/dashboard`) || PathPrefix(`/api`))" # <-- CHANGE DOMAIN
-    #   - "traefik.http.routers.http_traefik.entrypoints=web"
-    #   - "traefik.http.routers.http_traefik.middlewares=https_redirect"
-    #   - "traefik.http.middlewares.https_redirect.redirectscheme.scheme=https"
-    #   - "traefik.http.middlewares.https_redirect.redirectscheme.permanent=true"
-
-    #   - "traefik.http.routers.https-redirect.entrypoints=web"
-    #   - "traefik.docker.network=https_proxy_traefik"
-    #   - "traefik.http.routers.https-redirect.rule=HostRegexp(`{any:.*}`)"
-    #   - "traefik.http.routers.https-redirect.tls.options=default"
-    #   - "traefik.http.routers.https-redirect.middlewares=https-redirect"
-    #   - "traefik.http.middlewares.https-redirect.redirectscheme.scheme=https"
+    labels:
+      - "traefik.enable=true"
+      # Traefik complains if no port is set here, this dummy service doesn't exist. See [here](https://github.com/traefik/traefik/issues/5732)
+      - "traefik.http.services.justAdummyService.loadbalancer.server.port=1337"
+      - "traefik.http.routers.traefik_https.rule=Host(`${DOMAIN}`) && (PathPrefix(`/dashboard`) || PathPrefix(`/api`))"
+      - "traefik.http.routers.traefik_https.entrypoints=web-secure"
+      - "traefik.http.routers.traefik_https.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.traefik_https.tls=true"
+      - "traefik.http.routers.traefik_https.service=api@internal"
+      - "traefik.http.middlewares.traefik-auth.basicauth.users=${BASIC_AUTH_USER}:${BASIC_AUTH_PASSWORD_HASH}"
+      - "traefik.http.routers.http_traefik.rule=Host(`${DOMAIN}`) &&(PathPrefix(`/dashboard`) || PathPrefix(`/api`))"
+      - "traefik.http.routers.http_traefik.entrypoints=web"
+      - "traefik.http.routers.http_traefik.middlewares=https_redirect"
+      - "traefik.http.middlewares.https_redirect.redirectscheme.scheme=https"
+      - "traefik.http.middlewares.https_redirect.redirectscheme.permanent=true"
+      - "traefik.http.routers.https-redirect.entrypoints=web"
+      - "traefik.docker.network=https_proxy_traefik"
+      - "traefik.http.routers.https-redirect.rule=HostRegexp(`{any:.*}`)"
+      - "traefik.http.routers.https-redirect.tls.options=default"
+      - "traefik.http.routers.https-redirect.middlewares=https-redirect"
+      - "traefik.http.middlewares.https-redirect.redirectscheme.scheme=https"
