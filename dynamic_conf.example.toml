@@ -1,7 +1,2 @@
 [certificatesResolvers.letsencrypt.acme]
 	email = "${LETSENCRYPT_EMAIL}"
-	storage = "/letsencrypt/acme.json"
-	httpchallenge = true
-	[certificatesResolvers.letsencrypt.acme.httpChallenge]
-		# used during the challenge
-		entryPoint = "web"

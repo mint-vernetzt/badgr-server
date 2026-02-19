@@ -21,3 +21,10 @@
 
   [entryPoints.web-secure]
     address = ":443"
+
+[certificatesResolvers.letsencrypt.acme]
+	storage = "/letsencrypt/acme.json"
+	httpchallenge = true
+	[certificatesResolvers.letsencrypt.acme.httpChallenge]
+		# used during the challenge
+		entryPoint = "web"
