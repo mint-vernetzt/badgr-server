@@ -21,11 +21,3 @@
 
   [entryPoints.web-secure]
     address = ":443"
-
-[certificatesResolvers.letsencrypt.acme]
-  email = "Host(`{{ env.LETSENCRYPT_EMAIL }}`)"
-  storage = "/letsencrypt/acme.json"
-  httpchallenge = true
-  [certificatesResolvers.letsencrypt.acme.httpChallenge]
-    # used during the challenge
-    entryPoint = "web"
