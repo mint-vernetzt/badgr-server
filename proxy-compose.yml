@@ -18,7 +18,7 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.web.rule=Host(`${DOMAIN}`)"
-      - "traefik.http.routers.web.entrypoints=websecure"
+      - "traefik.http.routers.web.entrypoints=web-secure"
       - "traefik.http.routers.web.tls.certresolver=letsencrypt"
     networks:
       - default
