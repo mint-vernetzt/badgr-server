@@ -1,9 +1,31 @@
-[entryPoints]
-  [entryPoints.https]
-  address = ":443"
-    [entryPoints.https.tls]
+[global]
+  checkNewVersion = true
+  sendAnonymousUsage = false
 
-[acme]
-email = ""
-storageFile = "acme.json"
-entryPoint = "https"
+[api]
+  insecure = false
+  dashboard = true
+
+[providers.docker]
+  endpoint = "tcp://socket-proxy:2375"
+  exposedByDefault = false
+
+[providers.file]
+  filename = "/etc/traefik/dynamic_conf.toml"
+
+[entryPoints]
+  [entryPoints.web]
+    address = ":80"
+    http.redirections.entryPoint.to = "web-secure"
+    http.redirections.entryPoint.scheme = "https"
+
+  [entryPoints.web-secure]
+    address = ":443"
+
+[certificatesResolvers.letsencrypt.acme]
+  email = "Host(`{{ env.LETSENCRYPT_EMAIL }}`)"
+  storage = "/letsencrypt/acme.json"
+  httpchallenge = true
+  [certificatesResolvers.letsencrypt.acme.httpChallenge]
+    # used during the challenge
+    entryPoint = "web"

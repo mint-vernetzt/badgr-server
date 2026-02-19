@@ -5,8 +5,8 @@ networks:
     driver: bridge
   traefik:
     internal: true
-  # docker-socket-proxy:
-  #   internal: true
+  docker-socket-proxy:
+    internal: true
 
 services:
   test:
@@ -23,16 +23,16 @@ services:
     networks:
       - default
 
-  # socket-proxy:
-  #   image: tecnativa/docker-socket-proxy
-  #   restart: unless-stopped
-  #   volumes:
-  #     - /var/run/docker.sock:/var/run/docker.sock
-  #   environment:
-  #     CONTAINERS: 1
-  #     NETWORKS: 1
-  #   networks:
-  #     - docker-socket-proxy
+  socket-proxy:
+    image: tecnativa/docker-socket-proxy
+    restart: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      CONTAINERS: 1
+      NETWORKS: 1
+    networks:
+      - docker-socket-proxy
 
   traefik:
     image: traefik:v3
@@ -44,24 +44,15 @@ services:
       - 443:443
       - 8080:8080
     volumes:
-      # - "./traefik.toml:/etc/traefik/traefik.toml"
-      # - "./dynamic_conf.toml:/etc/traefik/dynamic_conf.toml"
+      - "./traefik.toml:/etc/traefik/traefik.toml"
+      - "./dynamic_conf.toml:/etc/traefik/dynamic_conf.toml"
       - "./letsencrypt:/letsencrypt"
-      - "/var/run/docker.sock:/var/run/docker.sock:ro"
-    # depends_on:
-    #   - socket-proxy
+    depends_on:
+      - socket-proxy
     networks:
-      # - docker-socket-proxy
+      - docker-socket-proxy
       - default
       - traefik
-    command:
-      - "--api.insecure=true"
-      - "--providers.docker=true"
-      - "--entrypoints.web.address=:80"
-      - "--entrypoints.websecure.address=:443"
-      - "--certificatesresolvers.letsencrypt.acme.tlschallenge=true"
-      - "--certificatesresolvers.letsencrypt.acme.email=${LETSENCRYPT_EMAIL}"
-      - "--certificatesresolvers.letsencrypt.acme.storage=/letsencrypt/acme.json"
     # labels:
     #   - "traefik.enable=true"
     #   # Traefik complains if no port is set here, this dummy service doesn't exist. See [here](https://github.com/traefik/traefik/issues/5732)

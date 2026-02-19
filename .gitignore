@@ -2,3 +2,4 @@
 /.tmp
 traefik.toml
 dynamic_conf.toml
+/letsencrypt
