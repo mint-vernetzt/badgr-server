@@ -13,7 +13,7 @@ services:
     command: chown -R 999:999 /badgr_server/sock /badgr_server/staticfiles /badgr_server/mediafiles
 
   api:
-    image: ghcr.io/open-educational-badges/badgr-server:develop
+    image: ghcr.io/open-educational-badges/badgr-server:production
     restart: unless-stopped
     depends_on:
       db:
