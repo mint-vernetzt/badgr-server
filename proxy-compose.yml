@@ -9,19 +9,19 @@ networks:
     internal: true
 
 services:
-  test:
-    image: nginx:alpine
-    env_file:
-      - ./.env
-    volumes:
-      - ./web:/usr/share/nginx/html:ro
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.web.rule=Host(`${DOMAIN}`)"
-      - "traefik.http.routers.web.entrypoints=web-secure"
-      - "traefik.http.routers.web.tls.certresolver=letsencrypt"
-    networks:
-      - default
+  # test:
+  #   image: nginx:alpine
+  #   env_file:
+  #     - ./.env
+  #   volumes:
+  #     - ./web:/usr/share/nginx/html:ro
+  #   labels:
+  #     - "traefik.enable=true"
+  #     - "traefik.http.routers.web.rule=Host(`${DOMAIN}`)"
+  #     - "traefik.http.routers.web.entrypoints=web-secure"
+  #     - "traefik.http.routers.web.tls.certresolver=letsencrypt"
+  #   networks:
+  #     - default
 
   socket-proxy:
     image: tecnativa/docker-socket-proxy
@@ -42,7 +42,7 @@ services:
     ports:
       - 80:80
       - 443:443
-      - 8080:8080
+      # - 8080:8080
     volumes:
       - "./traefik.toml:/etc/traefik/traefik.toml"
       - "./dynamic_conf.toml:/etc/traefik/dynamic_conf.toml"

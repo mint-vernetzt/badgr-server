@@ -77,7 +77,7 @@ services:
       - "logging_jobname=containerlogs"
 
   celery_worker:
-    image: ghcr.io/open-educational-badges/badgr-server:develop
+    image: ghcr.io/open-educational-badges/badgr-server:production
     entrypoint: []
     command: >
       bash -c "PYTHONPATH=/badgr_server/apps celery -A mainsite worker --loglevel=info"
