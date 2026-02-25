@@ -4,7 +4,7 @@ networks:
   default:
     driver: bridge
   traefik:
-    internal: external
+    external: true
   docker-socket-proxy:
     internal: true
 
