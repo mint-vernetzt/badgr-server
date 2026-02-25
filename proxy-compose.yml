@@ -4,7 +4,7 @@ networks:
   default:
     driver: bridge
   traefik:
-    internal: true
+    internal: external
   docker-socket-proxy:
     internal: true
 
@@ -42,7 +42,6 @@ services:
     ports:
       - 80:80
       - 443:443
-      # - 8080:8080
     volumes:
       - "./traefik.toml:/etc/traefik/traefik.toml"
       - "./dynamic_conf.toml:/etc/traefik/dynamic_conf.toml"
