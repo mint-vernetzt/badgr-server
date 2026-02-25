@@ -126,13 +126,13 @@ services:
     networks:
       - badgr
       - default
-      - https_proxy_traefik
+      - traefik
     labels:
       - "com.centurylinklabs.watchtower.enable=false"
       - "logging=promtail"
       - "logging_jobname=containerlogs"
       - "traefik.enable=true"
-      - "traefik.docker.network=https_proxy_traefik"
+      - "traefik.docker.network=traefik"
       # badgr-server-api is a arbitrary name
       # CHANGE DOMAIN BELOW
       - "traefik.http.routers.badgr-server-api.rule=Host(`api.${DOMAIN}`)" # <-- CHANGE DOMAIN
@@ -159,7 +159,7 @@ networks:
     driver: bridge
   badgr:
     driver: bridge
-  https_proxy_traefik:
+  traefik:
     external: true
 
 volumes:

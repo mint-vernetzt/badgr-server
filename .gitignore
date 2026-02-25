@@ -3,3 +3,4 @@
 traefik.toml
 dynamic_conf.toml
 /letsencrypt
+*.server

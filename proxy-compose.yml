@@ -7,8 +7,6 @@ networks:
     internal: true
   docker-socket-proxy:
     internal: true
-  https_proxy_traefik:
-    driver: bridge
 
 services:
   # test:
@@ -72,9 +70,8 @@ services:
       - "traefik.http.middlewares.https_redirect.redirectscheme.permanent=true"
 
       - "traefik.http.routers.https-redirect.entrypoints=web"
-      - "traefik.docker.network=https_proxy_traefik"
+      - "traefik.docker.network=traefik"
       - "traefik.http.routers.https-redirect.rule=HostRegexp(`{any:.*}`)"
       - "traefik.http.routers.https-redirect.tls.options=default"
       - "traefik.http.routers.https-redirect.middlewares=https-redirect"
       - "traefik.http.middlewares.https-redirect.redirectscheme.scheme=https"
-      # Add https_proxy_traefik to traefik service networks if needed
