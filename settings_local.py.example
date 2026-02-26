@@ -1,0 +1,165 @@
+# settings_local.py is for all instance specific settings
+
+import random
+import string
+from .settings import *
+from mainsite import TOP_DIR
+
+DEBUG = False
+DEBUG_ERRORS = DEBUG
+DEBUG_STATIC = DEBUG
+DEBUG_MEDIA = DEBUG
+
+TIME_ZONE = 'America/Los_Angeles'
+LANGUAGE_CODE = 'en-us'
+
+
+##
+#
+# Database Configuration
+#
+##
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'badgr',
+        'USER': 'root',
+        'PASSWORD': 'password',
+        'HOST': 'db',
+        'PORT': '',
+        'OPTIONS': {
+            'charset': 'utf8mb4',
+            'init_command': "SET NAMES 'utf8mb4' COLLATE 'utf8mb4_general_ci'"
+        },
+    }
+}
+
+
+###
+#
+# CACHE
+#
+###
+CACHES = {
+     'default': {
+         'BACKEND': 'django.core.cache.backends.memcached.PyMemcacheCache',
+         'LOCATION': 'memcached:11211',
+         'KEY_FUNCTION': 'mainsite.utils.filter_cache_key'
+     }
+ }
+
+
+
+###
+#
+# Email Configuration
+#
+###
+DEFAULT_FROM_EMAIL = ''  # e.g. "noreply@example.com"
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+
+###
+#
+# Celery Asynchronous Task Processing (Optional)
+#
+###
+# Using dedicated Celery workers for asynchronous tasks (required e.g. for asynchronous batch badge-awarding)
+# Set to True to run celery tasks in same thread as webserver (True means that asynchronous processing is OFF)
+CELERY_ALWAYS_EAGER = False
+
+CELERY_BROKER_URL = 'redis://redis:6379/0'
+CELERY_RESULT_BACKEND = 'redis://redis:6379/0'
+
+
+###
+#
+# Application Options Configuration
+#
+###
+HTTP_ORIGIN = 'http://localhost:8080'
+ALLOWED_HOSTS = ['*']
+STATIC_URL = HTTP_ORIGIN + '/static/'
+
+CSRF_COOKIE_DOMAIN = ''
+CSRF_TRUSTED_ORIGINS = []
+
+
+# Optionally restrict issuer creation to accounts that have the 'issuer.add_issuer' permission
+BADGR_APPROVED_ISSUERS_ONLY = False
+
+# Automatically send an email the first time that recipient identifier (email type) has been used on the system.
+GDPR_COMPLIANCE_NOTIFY_ON_FIRST_AWARD = True
+
+SECRET_KEY = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(40))
+UNSUBSCRIBE_KEY = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(40))
+UNSUBSCRIBE_SECRET_KEY = str(SECRET_KEY)
+
+
+###
+#
+# Logging
+#
+###
+LOGS_DIR = os.path.join(TOP_DIR, 'logs')
+if not os.path.exists(LOGS_DIR):
+    os.makedirs(LOGS_DIR)
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        # Only logs to the console appear in the docker / grafana logs
+        'console': {
+            'level': 'INFO',
+            'formatter': 'default',
+            'class': 'logging.StreamHandler'
+        },
+    },
+    "root": {
+        "handlers": ["console"],
+        "level": "WARNING",
+    },
+    'loggers': {
+        # Badgr.Events emits all badge related activity
+        'Badgr.Events': {
+            'handlers': ['console'],
+            # INFO contains sensible information about users
+            'level': 'WARNING',
+        },
+    },
+    'formatters': {
+        'default': {
+            'format': '%(asctime)s %(levelname)s %(module)s %(message)s'
+        }
+    },
+}
+
+NOUNPROJECT_API_KEY = ''
+NOUNPROJECT_SECRET = ''
+
+AISKILLS_API_KEY = ''
+AISKILLS_ENDPOINT_CHATS = ''
+AISKILLS_ENDPOINT_KEYWORDS = ''
+AISKILLS_ENDPOINT_TREE = ''
+
+OIDC_RP_CLIENT_ID = ''
+OIDC_RP_CLIENT_SECRET = ''
+OIDC_OP_AUTHORIZATION_ENDPOINT = ''
+OIDC_OP_TOKEN_ENDPOINT = ''
+OIDC_OP_USER_ENDPOINT = ''
+OIDC_OP_JWKS_ENDPOINT = ''
+OIDC_OP_END_SESSION_ENDPOINT = ''
+LOGIN_BASE_URL = ''
+
+# Don't change these
+LOGIN_REDIRECT_URL = f'{LOGIN_BASE_URL}?validateToken'
+LOGOUT_REDIRECT_URL = f'{LOGIN_BASE_URL}'
+
+ALTCHA_API_KEY = ''
+ALTCHA_SECRET = ''
+ALTCHA_SPAMFILTER_ENDPOINT = "https://eu.altcha.org/api/v1/classify?"
+
+# CMS contents
+CMS_API_BASE_URL = ''
+CMS_API_BASE_PATH = ''
+CMS_API_KEY = ''

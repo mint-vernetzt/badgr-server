@@ -30,10 +30,6 @@ services:
       - badgr_server_staticfiles:/badgr_server/staticfiles
       - ./uwsgi.ini:/badgr_server/uwsgi.ini
       - ./settings_local.py:/badgr_server/apps/mainsite/settings_local.py
-      - ./entrypoint.sh:/badgr_server/entrypoint.sh
-      - ./backups:/backups
-      - ./user_emails.csv:/badgr_server/user_emails.csv
-      - ./esco_issuers.txt:/badgr_server/esco_issuers.txt
     networks:
       - badgr
     labels:
@@ -84,7 +80,6 @@ services:
     volumes:
       - badgr_server_mediafiles:/badgr_server/mediafiles
       - ./settings_local.py:/badgr_server/apps/mainsite/settings_local.py
-      - ./entrypoint.sh:/badgr_server/entrypoint.sh
     environment:
       - CELERY_BROKER_URL=redis://redis:6379/0
       - CELERY_RESULT_BACKEND=redis://redis:6379/0
