@@ -59,7 +59,7 @@ services:
       - badgr_server_prod_db:/var/lib/mysql:rw
       - ./.docker/etc/init.sql:/docker-entrypoint-initdb.d/init.sql
     environment:
-      - "MYSQL_USER=${MYSQL_USER}"
+      # - "MYSQL_USER=${MYSQL_USER}"
       - "MYSQL_PASSWORD=${MYSQL_PASSWORD}"
       - "MYSQL_HOST=${MYSQL_HOST}"
       - "MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}"
@@ -85,7 +85,8 @@ services:
       - CELERY_RESULT_BACKEND=redis://redis:6379/0
       - "MYSQL_PASSWORD=${MYSQL_PASSWORD}"
       - "MYSQL_HOST=${MYSQL_HOST}"
-      - "MYSQL_USER=${MYSQL_USER}"
+      - "MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}"
+      # - "MYSQL_USER=${MYSQL_USER}"
       - TZ=Europe/Berlin
     networks:
       - badgr
