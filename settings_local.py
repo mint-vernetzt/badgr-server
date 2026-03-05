@@ -14,8 +14,7 @@ DEBUG_MEDIA = DEBUG
 TIME_ZONE = 'America/Los_Angeles'
 LANGUAGE_CODE = 'en-us'
 
-MYSQL_USER=os.environ.get('MYSQL_USER')
-MYSQL_PASSWORD=os.environ.get('MYSQL_PASSWORD')
+MYSQL_ROOT_PASSWORD=os.environ.get('MYSQL_ROOT_PASSWORD')
 MYSQL_HOST=os.environ.get('MYSQL_HOST')
 
 ##
@@ -27,9 +26,9 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'badgr',
-        'USER': MYSQL_USER,
-        'PASSWORD': MYSQL_PASSWORD,
-        'HOST': MYSQL_HOST,
+        'USER': 'root',
+        'PASSWORD': f"{MYSQL_ROOT_PASSWORD}",
+        'HOST': f"{MYSQL_HOST}",
         'PORT': '',
         'OPTIONS': {
             'charset': 'utf8mb4',
