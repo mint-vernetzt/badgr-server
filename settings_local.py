@@ -14,6 +14,7 @@ DEBUG_MEDIA = DEBUG
 TIME_ZONE = 'America/Los_Angeles'
 LANGUAGE_CODE = 'en-us'
 
+DOMAIN = os.environ.get('DOMAIN')
 MYSQL_ROOT_PASSWORD=os.environ.get('MYSQL_ROOT_PASSWORD')
 MYSQL_HOST=os.environ.get('MYSQL_HOST')
 
@@ -80,7 +81,9 @@ CELERY_RESULT_BACKEND = 'redis://redis:6379/0'
 # Application Options Configuration
 #
 ###
-HTTP_ORIGIN = 'http://localhost:8080'
+HTTP_ORIGIN = f"https://{DOMAIN}"
+if 'localhost' in DOMAIN:
+    HTTP_ORIGIN = f"http://{DOMAIN}"
 ALLOWED_HOSTS = ['*']
 STATIC_URL = HTTP_ORIGIN + '/static/'
 

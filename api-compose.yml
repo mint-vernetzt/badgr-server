@@ -45,6 +45,7 @@ services:
       - MYSQL_HOST=${MYSQL_HOST}
       - SECRET_KEY=${SECRET_KEY}
       - UNSUBSCRIBE_KEY=${UNSUBSCRIBE_KEY}
+      - DOMAIN=${DOMAIN}
       - TZ=Europe/Berlin
 
   memcached:
