@@ -9,20 +9,6 @@ networks:
     internal: true
 
 services:
-  # test:
-  #   image: nginx:alpine
-  #   env_file:
-  #     - ./.env
-  #   volumes:
-  #     - ./web:/usr/share/nginx/html:ro
-  #   labels:
-  #     - "traefik.enable=true"
-  #     - "traefik.http.routers.web.rule=Host(`${DOMAIN}`)"
-  #     - "traefik.http.routers.web.entrypoints=web-secure"
-  #     - "traefik.http.routers.web.tls.certresolver=letsencrypt"
-  #   networks:
-  #     - default
-
   socket-proxy:
     image: tecnativa/docker-socket-proxy
     restart: unless-stopped
@@ -56,13 +42,14 @@ services:
       - "traefik.enable=true"
       # Traefik complains if no port is set here, this dummy service doesn't exist. See [here](https://github.com/traefik/traefik/issues/5732)
       - "traefik.http.services.justAdummyService.loadbalancer.server.port=1337"
-      - "traefik.http.routers.traefik_https.rule=Host(`${DOMAIN}`) && (PathPrefix(`/dashboard`) || PathPrefix(`/api`))"
+      - "traefik.http.routers.traefik_https.rule=Host(`traefik.${DOMAIN}`) && (PathPrefix(`/dashboard`) || PathPrefix(`/api`))"
       - "traefik.http.routers.traefik_https.entrypoints=web-secure"
       - "traefik.http.routers.traefik_https.tls.certresolver=letsencrypt"
       - "traefik.http.routers.traefik_https.tls=true"
       - "traefik.http.routers.traefik_https.service=api@internal"
+      - "traefik.http.routers.traefik_https.middlewares=traefik-auth"
       - "traefik.http.middlewares.traefik-auth.basicauth.users=${BASIC_AUTH_USER}:${BASIC_AUTH_PASSWORD_HASH}"
-      - "traefik.http.routers.http_traefik.rule=Host(`${DOMAIN}`) &&(PathPrefix(`/dashboard`) || PathPrefix(`/api`))"
+      - "traefik.http.routers.http_traefik.rule=Host(`traefik.${DOMAIN}`) &&(PathPrefix(`/dashboard`) || PathPrefix(`/api`))"
       - "traefik.http.routers.http_traefik.entrypoints=web"
       - "traefik.http.routers.http_traefik.middlewares=https_redirect"
       - "traefik.http.middlewares.https_redirect.redirectscheme.scheme=https"
