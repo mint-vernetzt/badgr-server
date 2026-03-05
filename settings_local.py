@@ -2,6 +2,7 @@
 
 import random
 import string
+import os
 from .settings import *
 from mainsite import TOP_DIR
 
@@ -13,6 +14,9 @@ DEBUG_MEDIA = DEBUG
 TIME_ZONE = 'America/Los_Angeles'
 LANGUAGE_CODE = 'en-us'
 
+MYSQL_USER=os.environ.get('MYSQL_USER')
+MYSQL_PASSWORD=os.environ.get('MYSQL_PASSWORD')
+MYSQL_HOST=os.environ.get('MYSQL_HOST')
 
 ##
 #
@@ -23,9 +27,9 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'badgr',
-        'USER': 'root',
-        'PASSWORD': 'password',
-        'HOST': 'db',
+        'USER': MYSQL_USER,
+        'PASSWORD': MYSQL_PASSWORD,
+        'HOST': MYSQL_HOST,
         'PORT': '',
         'OPTIONS': {
             'charset': 'utf8mb4',
@@ -91,9 +95,10 @@ BADGR_APPROVED_ISSUERS_ONLY = False
 # Automatically send an email the first time that recipient identifier (email type) has been used on the system.
 GDPR_COMPLIANCE_NOTIFY_ON_FIRST_AWARD = True
 
-SECRET_KEY = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(40))
-UNSUBSCRIBE_KEY = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(40))
+SECRET_KEY = os.environ.get('SECRET_KEY')
+UNSUBSCRIBE_KEY = os.environ.get('UNSUBSCRIBE_KEY')
 UNSUBSCRIBE_SECRET_KEY = str(SECRET_KEY)
+#AUTHCODE_SECRET_KEY = 'b'pbLWSlLShz5TEzHZQcui1fffKd4IESlXlUOUQGa3uFY=''
 
 
 ###

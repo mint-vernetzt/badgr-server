@@ -15,6 +15,8 @@ services:
   api:
     image: ghcr.io/open-educational-badges/badgr-server:production
     restart: unless-stopped
+    env_file:
+      - .env
     depends_on:
       db:
         condition: service_started
@@ -38,6 +40,11 @@ services:
     environment:
       - CELERY_BROKER_URL=redis://redis:6379/0
       - CELERY_RESULT_BACKEND=redis://redis:6379/0
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - MYSQL_HOST=${MYSQL_HOST}
+      - SECRET_KEY=${SECRET_KEY}
+      - UNSUBSCRIBE_KEY=${UNSUBSCRIBE_KEY}
       - TZ=Europe/Berlin
 
   memcached:
@@ -86,9 +93,9 @@ services:
     environment:
       - CELERY_BROKER_URL=redis://redis:6379/0
       - CELERY_RESULT_BACKEND=redis://redis:6379/0
-      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
       - MYSQL_HOST=${MYSQL_HOST}
       - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
       - TZ=Europe/Berlin
     networks:
       - badgr
